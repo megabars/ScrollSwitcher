@@ -1,16 +1,18 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var isNaturalScroll = ScrollToggler.shared.isNaturalScroll
+
     var body: some View {
         VStack(spacing: 12) {
             Text("Scroll Switcher")
                 .font(.headline)
 
-            Toggle("Естественная прокрутка", isOn: Binding(
-                get: { ScrollToggler.shared.isNaturalScroll },
-                set: { ScrollToggler.shared.isNaturalScroll = $0 }
-            ))
-            .toggleStyle(.switch)
+            Toggle("Естественная прокрутка", isOn: $isNaturalScroll)
+                .toggleStyle(.switch)
+                .onChange(of: isNaturalScroll) { newValue in
+                    ScrollToggler.shared.isNaturalScroll = newValue
+                }
 
             Divider()
 
@@ -22,5 +24,8 @@ struct ContentView: View {
             .font(.caption)
         }
         .padding(16)
+        .onAppear {
+            isNaturalScroll = ScrollToggler.shared.isNaturalScroll
+        }
     }
 }
