@@ -37,6 +37,10 @@ On first launch, macOS will ask for Accessibility permission. This is required t
 
 The app dynamically loads Apple's private `PreferencePanesSupport` framework via `dlopen` at runtime and uses the `swipeScrollDirection` / `setSwipeScrollDirection` functions to read and change the system scroll direction.
 
+## Credits
+
+Built with the help of [Claude](https://claude.ai) AI by Anthropic.
+
 ---
 
 # ScrollSwitcher (RU)
@@ -77,3 +81,7 @@ open build/ScrollSwitcher.app
 ## Как это работает
 
 Приложение использует приватный фреймворк Apple `PreferencePanesSupport`, загружая его через `dlopen` во время выполнения. Через функции `swipeScrollDirection` и `setSwipeScrollDirection` читается и изменяется системная настройка направления прокрутки.
+
+## Благодарности
+
+Приложение создано при помощи нейросети [Claude](https://claude.ai) от Anthropic.
