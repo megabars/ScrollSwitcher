@@ -1,5 +1,46 @@
 # ScrollSwitcher
 
+A macOS menu bar utility to quickly toggle scroll direction (natural/standard) without opening System Settings.
+
+## Features
+
+- Toggle scroll direction with a single click
+- Lives in the menu bar, no Dock icon
+- Shows current scroll state
+
+## Requirements
+
+- macOS 13.0+ (Ventura or later)
+- Apple Silicon (arm64)
+
+## Build & Run
+
+```bash
+cd ScrollSwitcher
+./build.sh
+open build/ScrollSwitcher.app
+```
+
+To package as a DMG for distribution:
+
+```bash
+./package.sh
+```
+
+## Permissions
+
+On first launch, macOS will ask for Accessibility permission. This is required to change the system scroll direction setting.
+
+**System Settings → Privacy & Security → Accessibility** — add ScrollSwitcher to the list.
+
+## How It Works
+
+The app dynamically loads Apple's private `PreferencePanesSupport` framework via `dlopen` at runtime and uses the `swipeScrollDirection` / `setSwipeScrollDirection` functions to read and change the system scroll direction.
+
+---
+
+# ScrollSwitcher (RU)
+
 Утилита для macOS, которая позволяет быстро переключать направление прокрутки (естественная/стандартная) прямо из строки меню — без необходимости заходить в Системные настройки.
 
 ## Возможности
@@ -11,7 +52,7 @@
 ## Требования
 
 - macOS 13.0+ (Ventura и новее)
-- Архитектура Apple Silicon (arm64)
+- Apple Silicon (arm64)
 
 ## Сборка и запуск
 
@@ -21,9 +62,15 @@ cd ScrollSwitcher
 open build/ScrollSwitcher.app
 ```
 
+Для упаковки в DMG:
+
+```bash
+./package.sh
+```
+
 ## Разрешения
 
-При первом запуске macOS может запросить разрешение на управление Универсальным доступом (Accessibility). Это необходимо для изменения системных настроек прокрутки.
+При первом запуске macOS запросит разрешение на Универсальный доступ (Accessibility). Это необходимо для изменения системных настроек прокрутки.
 
 **Системные настройки → Конфиденциальность и безопасность → Универсальный доступ** — добавьте ScrollSwitcher в список.
 
