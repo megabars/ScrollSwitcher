@@ -16,14 +16,21 @@ class ScrollToggler {
         if let handle = handle,
            let getPtr = dlsym(handle, "swipeScrollDirection"),
            let setPtr = dlsym(handle, "setSwipeScrollDirection") {
-            getFn = unsafeBitCast(getPtr, to: GetFn.self)
-            setFn = unsafeBitCast(setPtr, to: SetFn.self)
+            let resolvedGet = unsafeBitCast(getPtr, to: GetFn.self)
+            let resolvedSet = unsafeBitCast(setPtr, to: SetFn.self)
+            // Smoke test: verify the symbol is callable
+            let _ = resolvedGet()
+            getFn = resolvedGet
+            setFn = resolvedSet
+            NSLog("ScrollToggler: loaded OK, natural scroll = \(resolvedGet())")
         } else {
             getFn = nil
             setFn = nil
             NSLog("ScrollToggler: failed to load PreferencePanesSupport")
         }
     }
+
+    var isAvailable: Bool { getFn != nil && setFn != nil }
 
     var isNaturalScroll: Bool {
         get { getFn?() ?? true }
@@ -32,8 +39,8 @@ class ScrollToggler {
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    var statusItem: NSStatusItem!
-    var popover: NSPopover!
+    private var statusItem: NSStatusItem?
+    private var popover: NSPopover?
 
     private func createMenuBarIcon() -> NSImage {
         let size: CGFloat = 18
@@ -77,18 +84,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-
-        if let button = statusItem.button {
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        if let button = item.button {
             button.image = createMenuBarIcon()
             button.action = #selector(togglePopover)
             button.target = self
         }
+        statusItem = item
 
-        popover = NSPopover()
-        popover.contentSize = NSSize(width: 220, height: 120)
-        popover.behavior = .transient
-        popover.contentViewController = NSHostingController(rootView: ContentView())
+        let pop = NSPopover()
+        pop.contentSize = NSSize(width: 240, height: 120)
+        pop.behavior = .transient
+        pop.contentViewController = NSHostingController(rootView: ContentView())
+        popover = pop
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -96,11 +104,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func togglePopover() {
-        guard let button = statusItem.button else { return }
+        guard let button = statusItem?.button, let popover = popover else { return }
 
         if popover.isShown {
             popover.performClose(nil)
         } else {
+            popover.contentViewController = NSHostingController(rootView: ContentView())
             NSApp.activate(ignoringOtherApps: true)
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         }
