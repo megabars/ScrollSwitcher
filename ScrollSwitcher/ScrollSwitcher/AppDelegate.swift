@@ -35,11 +35,52 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
     var popover: NSPopover!
 
+    private func createMenuBarIcon() -> NSImage {
+        let size: CGFloat = 18
+        let img = NSImage(size: NSSize(width: size, height: size))
+        img.lockFocus()
+
+        let ctx = NSGraphicsContext.current!.cgContext
+
+        // Trackpad body
+        let padRect = CGRect(x: 1, y: 1, width: 16, height: 16)
+        let padPath = CGPath(roundedRect: padRect, cornerWidth: 3, cornerHeight: 3, transform: nil)
+        ctx.setStrokeColor(NSColor.controlTextColor.cgColor)
+        ctx.setLineWidth(1.2)
+        ctx.addPath(padPath)
+        ctx.strokePath()
+
+        // Divider line (click area)
+        ctx.move(to: CGPoint(x: 4, y: 5))
+        ctx.addLine(to: CGPoint(x: 14, y: 5))
+        ctx.setLineWidth(0.8)
+        ctx.strokePath()
+
+        // Up arrow
+        ctx.setFillColor(NSColor.controlTextColor.cgColor)
+        ctx.move(to: CGPoint(x: 9, y: 15))
+        ctx.addLine(to: CGPoint(x: 6, y: 11.5))
+        ctx.addLine(to: CGPoint(x: 12, y: 11.5))
+        ctx.closePath()
+        ctx.fillPath()
+
+        // Down arrow
+        ctx.move(to: CGPoint(x: 9, y: 6.5))
+        ctx.addLine(to: CGPoint(x: 6, y: 10))
+        ctx.addLine(to: CGPoint(x: 12, y: 10))
+        ctx.closePath()
+        ctx.fillPath()
+
+        img.unlockFocus()
+        img.isTemplate = true
+        return img
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "arrow.up.arrow.down", accessibilityDescription: "Scroll Switcher")
+            button.image = createMenuBarIcon()
             button.action = #selector(togglePopover)
             button.target = self
         }
